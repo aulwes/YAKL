@@ -8,7 +8,7 @@
     yakl_mtx.lock();
 
     if ( ! isInitialized() ) {
-      #if defined(YAKL_PROFILE) || defined(YAKL_AUTO_PROFILE)
+      #if ( defined(YAKL_PROFILE) || defined(YAKL_AUTO_PROFILE) ) && ! defined(YAKL_EXTERNAL_GPTL)
         if (yakl_masterproc()) std::cout << "Using YAKL Timers via GPTL\n";
         GPTLinitialize();
       #endif
