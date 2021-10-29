@@ -22,6 +22,8 @@
 #include <pthread.h>
 #endif
 
+#ifndef YAKL_EXTERNAL_GPTL
+
 /* Mapping of PAPI counters to short and long printed strings */
 
 static const Entry papitable [] = {
@@ -1323,4 +1325,6 @@ int GPTLevent_code_to_name (int code, char *name)
 }
 
 #endif  /* HAVE_PAPI */
+
+#endif
 

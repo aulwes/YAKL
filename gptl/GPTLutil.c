@@ -8,6 +8,8 @@
 
 #include "private.h"
 
+#ifndef YAKL_EXTERNAL_GPTL
+
 static bool abort_on_error = false; /* flag says to abort on any error */
 static int max_error = 500;         /* max number of error print msgs */
 
@@ -79,4 +81,6 @@ void *GPTLallocate (const int nbytes)
 
   return ptr;
 }
+
+#endif
 

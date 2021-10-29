@@ -36,6 +36,8 @@
 #include "private.h"
 #include "gptl.h"
 
+#ifndef YAKL_EXTERNAL_GPTL
+
 static Timer **timers = 0;           /* linked list of timers */
 static Timer **last = 0;             /* last element in list */
 static int *max_depth;               /* maximum indentation level encountered */
@@ -6029,3 +6031,6 @@ static int serial_region ()
 }
 
 #endif
+
+#endif
+

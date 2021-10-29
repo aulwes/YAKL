@@ -20,6 +20,8 @@
 #include <spi/include/kernel/memory.h>
 #endif
 
+#ifndef YAKL_EXTERNAL_GPTL
+
 static int nearest_powerof2 (const int);
 static int convert_to_mb = 1;   /* true */
 
@@ -118,6 +120,9 @@ int GPTLprint_memusage (const char *str)
   return 0;
 #endif
 }
+
+#endif
+
 
 /*
 ** nearest_powerof2:

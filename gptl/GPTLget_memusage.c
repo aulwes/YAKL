@@ -62,6 +62,8 @@
 
 #define PRINT_MEMUSAGE 0
 
+#ifndef YAKL_EXTERNAL_GPTL
+
 int GPTLget_memusage (int *size, int *rss, int *share, int *text, int *datastack)
 {
 #if defined (BGP)
@@ -194,3 +196,4 @@ int GPTLget_memusage (int *size, int *rss, int *share, int *text, int *datastack
 
 #endif
 }
+#endif
