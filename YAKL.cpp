@@ -32,6 +32,28 @@ namespace yakl {
   std::function<void ( void * , char const *)>  yaklFreeHostFunc  = [] ( void *ptr    , char const *label )          {
     yakl_throw("ERROR: attempting memory free before calling yakl::init()");
   };
+
+  void streamCreate(yakl_stream_t * stream)
+  {
+    #ifdef YAKL_ARCH_CUDA
+    cudaStreamCreate(stream);
+    #elif YAKL_ARCH_HIP
+    hipStreamCreate(stream);
+    #else
+    stream = nullptr;
+    #endif
+  }
+
+  void streamDestroy(yakl_stream_t stream)
+  {
+    #ifdef YAKL_ARCH_CUDA
+    cudaStreamDestroy(stream);
+    #elif YAKL_ARCH_HIP
+    hipStreamDestroy(stream);
+    #else
+    stream = nullptr;
+    #endif
+  }
 }
 
 
@@ -55,5 +77,4 @@ extern "C" void* gatorAllocate( size_t bytes ) {
 extern "C" void gatorDeallocate( void *ptr ) {
   yakl::yaklFreeDevice( ptr , "");
 }
-
 

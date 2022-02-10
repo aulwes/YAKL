@@ -1,7 +1,9 @@
 
 #pragma once
 
+#include "YAKL_Streams.h"
 
+const int defaultVectorSize = 128;
 
 namespace fortran {
 
@@ -549,17 +551,17 @@ namespace fortran {
     }
 
     template<class F , int N , bool simple , typename std::enable_if< sizeof(F) <= 3900 , int >::type = 0>
-    void parallel_for_cuda( Bounds<N,simple> const &bounds , F const &f , int vectorSize = 128 ) {
-      cudaKernelVal <<< (unsigned int) (bounds.nIter-1)/vectorSize+1 , vectorSize >>> ( bounds , f );
+    void parallel_for_cuda( Bounds<N,simple> const &bounds , F const &f , int vectorSize = 128, yakl::yakl_stream_t stream = 0 ) {
+      cudaKernelVal <<< (unsigned int) (bounds.nIter-1)/vectorSize+1 , vectorSize, stream >>> ( bounds , f );
       check_last_error();
     }
 
     template<class F , int N , bool simple , typename std::enable_if< sizeof(F) >= 3901 , int >::type = 0>
-    void parallel_for_cuda( Bounds<N,simple> const &bounds , F const &f , int vectorSize = 128 ) {
+    void parallel_for_cuda( Bounds<N,simple> const &bounds , F const &f , int vectorSize = 128, yakl::yakl_stream_t stream = 0 ) {
       F *fp = (F *) functorBuffer;
       cudaMemcpyAsync(fp,&f,sizeof(F),cudaMemcpyHostToDevice);
       check_last_error();
-      cudaKernelRef <<< (unsigned int) (bounds.nIter-1)/vectorSize+1 , vectorSize >>> ( bounds , *fp );
+      cudaKernelRef <<< (unsigned int) (bounds.nIter-1)/vectorSize+1 , vectorSize, stream >>> ( bounds , *fp );
       check_last_error();
     }
   #endif
@@ -575,9 +577,9 @@ namespace fortran {
     }
 
     template<class F, int N, bool simple>
-    void parallel_for_hip( Bounds<N,simple> const &bounds , F const &f , int vectorSize = 128 ) {
+    void parallel_for_hip( Bounds<N,simple> const &bounds , F const &f , int vectorSize = 128, yakl::yakl_stream_t stream = 0 ) {
       hipLaunchKernelGGL( hipKernel , dim3((bounds.nIter-1)/vectorSize+1) , dim3(vectorSize) ,
-                          (std::uint32_t) 0 , (hipStream_t) 0 , bounds , f );
+                          (std::uint32_t) 0 , (hipStream_t) stream , bounds , f );
       check_last_error();
     }
   #endif
@@ -862,11 +864,11 @@ namespace fortran {
   // Bounds class, No label
   // This serves as the template, which all other user-level functions route into
   template <class F, int N, bool simple>
-  inline void parallel_for( Bounds<N,simple> const &bounds , F const &f , int vectorSize = 128 ) {
+  inline void parallel_for( Bounds<N,simple> const &bounds , F const &f , int vectorSize = 128, yakl::yakl_stream_t stream = 0 ) {
     #ifdef YAKL_ARCH_CUDA
-      parallel_for_cuda( bounds , f , vectorSize );
+      parallel_for_cuda( bounds , f , vectorSize, stream );
     #elif defined(YAKL_ARCH_HIP)
-      parallel_for_hip ( bounds , f , vectorSize );
+      parallel_for_hip ( bounds , f , vectorSize, stream );
     #elif defined(YAKL_ARCH_SYCL)
       parallel_for_sycl( bounds , f , vectorSize );
     #else
