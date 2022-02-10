@@ -15,7 +15,7 @@ public:
 
 
   template <int theirRank, int theirStyle>
-  inline void deep_copy_to(Array<T,theirRank,memHost,theirStyle> &lhs) const {
+  inline void deep_copy_to(Array<T,theirRank,memHost,theirStyle> &lhs,yakl::yakl_stream_t stream = 0 ) const {
     #ifdef YAKL_DEBUG
       if (this->totElems() != lhs.totElems()) {
         yakl_throw("ERROR: deep_copy_to with different number of elements");
@@ -27,13 +27,13 @@ public:
     if (myMem == memHost) {
       memcpy_host_to_host( lhs.myData , this->myData , this->totElems() );
     } else {
-      memcpy_device_to_host( lhs.myData , this->myData , this->totElems() );
+      memcpy_device_to_host( lhs.myData , this->myData , this->totElems(), stream );
     }
   }
 
 
   template <int theirRank, int theirStyle>
-  inline void deep_copy_to(Array<T,theirRank,memDevice,theirStyle> &lhs) const {
+  inline void deep_copy_to(Array<T,theirRank,memDevice,theirStyle> &lhs, yakl::yakl_stream_t stream = 0 ) const {
     #ifdef YAKL_DEBUG
       if (this->totElems() != lhs.totElems()) {
         yakl_throw("ERROR: deep_copy_to with different number of elements");
@@ -43,7 +43,7 @@ public:
       }
     #endif
     if (myMem == memHost) {
-      memcpy_host_to_device( lhs.myData , this->myData , this->totElems() );
+      memcpy_host_to_device( lhs.myData , this->myData , this->totElems(), stream );
     } else {
       memcpy_device_to_device( lhs.myData , this->myData , this->totElems() );
     }

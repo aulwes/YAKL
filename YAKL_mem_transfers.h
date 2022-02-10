@@ -8,12 +8,12 @@
 
 
   template <class T>
-  inline void memcpy_device_to_host(T *dst , T *src , index_t elems) {
+  inline void memcpy_device_to_host(T *dst , T *src , index_t elems,yakl::yakl_stream_t stream ) {
     #ifdef YAKL_ARCH_CUDA
-      cudaMemcpyAsync(dst,src,elems*sizeof(T),cudaMemcpyDeviceToHost,0);
+      cudaMemcpyAsync(dst,src,elems*sizeof(T),cudaMemcpyDeviceToHost,stream);
       check_last_error();
     #elif defined(YAKL_ARCH_HIP)
-      hipMemcpyAsync(dst,src,elems*sizeof(T),hipMemcpyDeviceToHost,0);
+      hipMemcpyAsync(dst,src,elems*sizeof(T),hipMemcpyDeviceToHost,stream);
       check_last_error();
     #elif defined (YAKL_ARCH_SYCL)
       sycl_default_stream.memcpy(dst, src, elems*sizeof(T));
@@ -34,12 +34,12 @@
 
 
   template <class T>
-  inline void memcpy_host_to_device(T *dst , T *src , index_t elems) {
+  inline void memcpy_host_to_device(T *dst , T *src , index_t elems,yakl::yakl_stream_t stream ) {
     #ifdef YAKL_ARCH_CUDA
-      cudaMemcpyAsync(dst,src,elems*sizeof(T),cudaMemcpyHostToDevice,0);
+      cudaMemcpyAsync(dst,src,elems*sizeof(T),cudaMemcpyHostToDevice,stream);
       check_last_error();
     #elif defined(YAKL_ARCH_HIP)
-      hipMemcpyAsync(dst,src,elems*sizeof(T),hipMemcpyHostToDevice,0);
+      hipMemcpyAsync(dst,src,elems*sizeof(T),hipMemcpyHostToDevice,stream);
       check_last_error();
     #elif defined (YAKL_ARCH_SYCL)
       sycl_default_stream.memcpy(dst, src, elems*sizeof(T));
