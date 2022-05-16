@@ -552,7 +552,7 @@ namespace fortran {
 
     template<class F , int N , bool simple , typename std::enable_if< sizeof(F) <= 3900 , int >::type = 0>
     void parallel_for_cuda( Bounds<N,simple> const &bounds , F const &f , int vectorSize = 128, yakl::yakl_stream_t stream = 0 ) {
-      cudaKernelVal <<< (unsigned int) (bounds.nIter-1)/vectorSize+1 , vectorSize, stream >>> ( bounds , f );
+      cudaKernelVal <<< (unsigned int) (bounds.nIter-1)/vectorSize+1 , vectorSize, 0, stream >>> ( bounds , f );
       check_last_error();
     }
 
@@ -561,7 +561,7 @@ namespace fortran {
       F *fp = (F *) functorBuffer;
       cudaMemcpyAsync(fp,&f,sizeof(F),cudaMemcpyHostToDevice);
       check_last_error();
-      cudaKernelRef <<< (unsigned int) (bounds.nIter-1)/vectorSize+1 , vectorSize, stream >>> ( bounds , *fp );
+      cudaKernelRef <<< (unsigned int) (bounds.nIter-1)/vectorSize+1 , vectorSize, 0, stream >>> ( bounds , *fp );
       check_last_error();
     }
   #endif
@@ -879,6 +879,34 @@ namespace fortran {
       fence();
     #endif
   }
+
+template <class F, int N, bool simple>
+inline void parallel_for_record( Bounds<N,simple> const &bounds , F const &f , int vectorSize, yakl::yakl_stream_t stream,  yakl::yakl_event_t event) {
+  #if defined(YAKL_ARCH_HIP)
+    parallel_for_hip ( bounds , f , vectorSize, stream );
+    hipEventRecord(event, stream);
+  #else
+    parallel_for_cpu_serial( bounds , f );
+  #endif
+
+  #if defined(YAKL_AUTO_FENCE) || defined(YAKL_DEBUG)
+    fence();
+  #endif
+}
+
+template <class F, int N, bool simple>
+inline void parallel_for_wait( Bounds<N,simple> const &bounds , F const &f , int vectorSize, yakl::yakl_stream_t stream,  yakl::yakl_event_t event) {
+  #if defined(YAKL_ARCH_HIP)
+    hipStreamWaitEvent(stream, event, 0);
+    parallel_for_hip ( bounds , f , vectorSize, stream );
+  #else
+    parallel_for_cpu_serial( bounds , f );
+  #endif
+
+  #if defined(YAKL_AUTO_FENCE) || defined(YAKL_DEBUG)
+    fence();
+  #endif
+}
 
   // Bounds class, Label
   template <class F, int N, bool simple>

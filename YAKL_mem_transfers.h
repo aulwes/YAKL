@@ -8,7 +8,7 @@
 
 
   template <class T>
-  inline void memcpy_device_to_host(T *dst , T *src , index_t elems,yakl::yakl_stream_t stream ) {
+  inline void memcpy_device_to_host(T *dst , T *src , index_t elems,yakl::yakl_stream_t stream = 0 ) {
     #ifdef YAKL_ARCH_CUDA
       cudaMemcpyAsync(dst,src,elems*sizeof(T),cudaMemcpyDeviceToHost,stream);
       check_last_error();
@@ -34,7 +34,7 @@
 
 
   template <class T>
-  inline void memcpy_host_to_device(T *dst , T *src , index_t elems,yakl::yakl_stream_t stream ) {
+  inline void memcpy_host_to_device(T *dst , T *src , index_t elems,yakl::yakl_stream_t stream = 0 ) {
     #ifdef YAKL_ARCH_CUDA
       cudaMemcpyAsync(dst,src,elems*sizeof(T),cudaMemcpyHostToDevice,stream);
       check_last_error();

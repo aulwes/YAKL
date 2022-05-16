@@ -51,7 +51,29 @@ namespace yakl {
     #elif YAKL_ARCH_HIP
     hipStreamDestroy(stream);
     #else
+    stream = NULL;
+    #endif
+  }
+
+  void eventCreate(yakl_event_t * event)
+  {
+    #ifdef YAKL_ARCH_CUDA
+    cudaEventCreate(event);
+    #elif YAKL_ARCH_HIP
+    hipEventCreate(event);
+    #else
     stream = nullptr;
+    #endif
+  }
+
+  void eventDestroy(yakl_event_t event)
+  {
+    #ifdef YAKL_ARCH_CUDA
+    cudaEventDestroy(event);
+    #elif YAKL_ARCH_HIP
+    hipEventDestroy(event);
+    #else
+    stream = NULL;
     #endif
   }
 }
