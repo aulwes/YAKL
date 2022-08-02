@@ -56,6 +56,46 @@ namespace yakl {
   std::function<void ( void * , char const *)>  free_host_func    = [] ( void *ptr    , char const *label )          {
     yakl_throw("ERROR: attempting memory free before calling yakl::init()");
   };
+
+  void streamCreate(yakl_stream_t * stream)
+  {
+    #ifdef YAKL_ARCH_CUDA
+    cudaStreamCreate(stream);
+    #elif YAKL_ARCH_HIP
+    hipStreamCreate(stream);
+    #else
+    stream = nullptr;
+    #endif
+  }
+
+  void streamDestroy(yakl_stream_t stream)
+  {
+    #ifdef YAKL_ARCH_CUDA
+    cudaStreamDestroy(stream);
+    #elif YAKL_ARCH_HIP
+    hipStreamDestroy(stream);
+    #endif
+  }
+
+  void eventCreate(yakl_event_t * event)
+  {
+    #ifdef YAKL_ARCH_CUDA
+    cudaEventCreate(event);
+    #elif YAKL_ARCH_HIP
+    hipEventCreate(event);
+    #else
+    event = nullptr;
+    #endif
+  }
+
+  void eventDestroy(yakl_event_t event)
+  {
+    #ifdef YAKL_ARCH_CUDA
+    cudaEventDestroy(event);
+    #elif YAKL_ARCH_HIP
+    hipEventDestroy(event);
+    #endif
+  }
 }
 
 
