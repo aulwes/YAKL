@@ -499,13 +499,13 @@ inline void parallel_for( char const * str , Bounds<N,simple> const &bounds , F 
 // Default parameter to config, VecLen, and B4B already specified in YAKL_parallel_for_c.h and YAKL_parallel_for_fortran.h
 template <class F, int N, bool simple, int VecLen=YAKL_DEFAULT_VECTOR_LEN, bool B4B=false>
 inline void parallel_for( Bounds<N,simple> const &bounds , F const &f ,
-                          LaunchConfig<VecLen,B4B> config = LaunchConfig<>() ) {
+                          LaunchConfig<VecLen,B4B> config = LaunchConfig<>(), yakl_stream_t stream = 0  ) {
   parallel_for( "Unlabeled" , bounds , f , config );
 }
 
 template <class F, int VecLen=YAKL_DEFAULT_VECTOR_LEN, bool B4B=false>
 inline void parallel_for( LBnd bnd , F const &f ,
-                          LaunchConfig<VecLen,B4B> config = LaunchConfig<>() ) {
+                          LaunchConfig<VecLen,B4B> config = LaunchConfig<>(), yakl_stream_t stream = 0  ) {
   if (bnd.l == bnd.default_lbound && bnd.s == 1) {
     parallel_for( "Unlabeled" , Bounds<1,true>(bnd.to_scalar()) , f , config );
   } else {
@@ -515,7 +515,7 @@ inline void parallel_for( LBnd bnd , F const &f ,
 
 template <class F, int VecLen=YAKL_DEFAULT_VECTOR_LEN, bool B4B=false>
 inline void parallel_for( char const * str , LBnd bnd , F const &f ,
-                          LaunchConfig<VecLen,B4B> config = LaunchConfig<>() ) {
+                          LaunchConfig<VecLen,B4B> config = LaunchConfig<>(), yakl_stream_t stream = 0  ) {
   if (bnd.l == bnd.default_lbound && bnd.s == 1) {
     parallel_for( str , Bounds<1,true>(bnd.to_scalar()) , f , config );
   } else {
