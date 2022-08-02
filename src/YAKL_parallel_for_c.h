@@ -35,7 +35,7 @@ namespace yakl {
      */
     template <class F, int N, bool simple, int VecLen=YAKL_DEFAULT_VECTOR_LEN , bool B4B = false>
     inline void parallel_for( char const * str , Bounds<N,simple> const &bounds , F const &f ,
-                              LaunchConfig<VecLen,B4B> config = LaunchConfig<>() );
+                              LaunchConfig<VecLen,B4B> config = LaunchConfig<>(), yakl_stream_t stream = 0 );
 
     /**
      * @brief [ASYNCHRONOUS] Launch the passed functor in parallel. 
@@ -44,7 +44,7 @@ namespace yakl {
      */
     template <class F, int N, bool simple, int VecLen=YAKL_DEFAULT_VECTOR_LEN , bool B4B = false>
     inline void parallel_for( Bounds<N,simple> const &bounds , F const &f ,
-                              LaunchConfig<VecLen,B4B> config = LaunchConfig<>() );
+                              LaunchConfig<VecLen,B4B> config = LaunchConfig<>(), yakl_stream_t stream = 0 );
 
     /**
      * @brief [ASYNCHRONOUS] Launch the passed functor in parallel in the coarsest-level parallelism on the device.

@@ -68,7 +68,7 @@ YAKL_DEVICE_INLINE void callFunctorOuter(F const &f , Bounds<N,simple> const &bn
 
   // If the functor is small enough, then launch it like normal
   template<class F , int N , bool simple, int VecLen, bool B4B>
-  void parallel_for_cuda( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl_stream_t stream = 0 ) {
+  void parallel_for_cuda( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl_stream_t stream ) {
     if constexpr (sizeof(F) <= 4000) {
       cudaKernelVal <<< (unsigned int) (bounds.nIter-1)/VecLen+1 , VecLen, 0, stream >>> ( bounds , f , config );
       check_last_error();
@@ -151,7 +151,7 @@ YAKL_DEVICE_INLINE void callFunctorOuter(F const &f , Bounds<N,simple> const &bn
   }
 
   template<class F, int N, bool simple, int VecLen, bool B4B>
-  void parallel_for_hip( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl_stream_t stream = 0 ) {
+  void parallel_for_hip( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl_stream_t stream ) {
     hipLaunchKernelGGL( hipKernel , dim3((bounds.nIter-1)/VecLen+1) , dim3(VecLen) ,
                         (std::uint32_t) 0 , (hipStream_t) stream , bounds , f , config );
     check_last_error();
@@ -444,7 +444,7 @@ inline void parallel_inner_cpu_serial( Bounds<N,simple> const &bounds , F const 
 // Default parameter to config, VecLen, and B4B already specified in YAKL_parallel_for_c.h and YAKL_parallel_for_fortran.h
 template <class F, int N, bool simple, int VecLen , bool B4B>
 inline void parallel_for( char const * str , Bounds<N,simple> const &bounds , F const &f ,
-                          LaunchConfig<VecLen,B4B> config ) {
+                          LaunchConfig<VecLen,B4B> config, yakl_stream_t stream ) {
   // Automatically time (if requested) and add nvtx ranges for easier nvprof / nsight profiling
   #ifdef YAKL_AUTO_PROFILE
     timer_start(str);
