@@ -31,6 +31,7 @@ namespace yakl {
 #include "YAKL_mutex.h"
 #include "YAKL_sycldevice.h"
 #include "YAKL_LaunchConfig.h"
+#include "YAKL_Streams.h"
 #include "YAKL_fence.h"
 #include "YAKL_error.h"
 #include "YAKL_simd.h"

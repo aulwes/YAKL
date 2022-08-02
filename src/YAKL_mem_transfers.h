@@ -35,7 +35,7 @@ namespace yakl {
   template <class T1, class T2,
             typename std::enable_if< std::is_same< typename std::remove_cv<T1>::type ,
                                                    typename std::remove_cv<T2>::type >::value , int >::type = 0>
-  inline void memcpy_device_to_host(T1 *dst , T2 *src , index_t elems, yakl::yakl_stream_t stream = 0) {
+  inline void memcpy_device_to_host(T1 *dst , T2 *src , index_t elems, yakl_stream_t stream = 0) {
     #ifdef YAKL_AUTO_PROFILE
       timer_start("YAKL_internal_memcpy_device_to_host");
     #endif
@@ -69,7 +69,7 @@ namespace yakl {
   template <class T1, class T2,
             typename std::enable_if< std::is_same< typename std::remove_cv<T1>::type ,
                                                    typename std::remove_cv<T2>::type >::value , int >::type = 0>
-  inline void memcpy_host_to_device(T1 *dst , T2 *src , index_t elems, yakl::yakl_stream_t stream = 0) {
+  inline void memcpy_host_to_device(T1 *dst , T2 *src , index_t elems, yakl_stream_t stream = 0) {
     #ifdef YAKL_AUTO_PROFILE
       timer_start("YAKL_internal_memcpy_host_to_device");
     #endif

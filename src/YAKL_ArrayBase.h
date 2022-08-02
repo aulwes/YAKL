@@ -52,7 +52,7 @@ namespace yakl {
       * `this` array may be in yakl::memHost or yakl::memDevice space. */
     template <int theirRank, int theirStyle>
     inline void deep_copy_to(Array<typename std::remove_cv<T>::type,theirRank,memHost,theirStyle> const &lhs,
-                             yakl::yakl_stream_t stream = 0) const {
+                             yakl_stream_t stream = 0) const {
       #ifdef YAKL_DEBUG
         if (this->totElems() != lhs.totElems()) { yakl_throw("ERROR: deep_copy_to with different number of elements"); }
         if (this->myData == nullptr || lhs.myData == nullptr) { yakl_throw("ERROR: deep_copy_to with nullptr"); }
@@ -73,7 +73,7 @@ namespace yakl {
       * `this` array may be in yakl::memHost or yakl::memDevice space. */
     template <int theirRank, int theirStyle>
     inline void deep_copy_to(Array<typename std::remove_cv<T>::type,theirRank,memDevice,theirStyle> const &lhs,
-                             yakl::yakl_stream_t stream = 0) const {
+                             yakl_stream_t stream = 0) const {
       #ifdef YAKL_DEBUG
         if (this->totElems() != lhs.totElems()) { yakl_throw("ERROR: deep_copy_to with different number of elements"); }
         if (this->myData == nullptr || lhs.myData == nullptr) { yakl_throw("ERROR: deep_copy_to with nullptr"); }

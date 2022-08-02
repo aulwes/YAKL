@@ -1,5 +1,3 @@
-#include "YAKL_Streams.h"
-
 // #pragma once is purposefully omitted here because it needs to be included twice: once in each namespace: c and fortran
 // Included by YAKL_parallel_for_c.h and YAKL_parallel_for_fortran.h
 // Inside the yakl::c and yakl::fortran namespaces
@@ -70,7 +68,7 @@ YAKL_DEVICE_INLINE void callFunctorOuter(F const &f , Bounds<N,simple> const &bn
 
   // If the functor is small enough, then launch it like normal
   template<class F , int N , bool simple, int VecLen, bool B4B>
-  void parallel_for_cuda( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl::yakl_stream_t stream = 0 ) {
+  void parallel_for_cuda( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl_stream_t stream = 0 ) {
     if constexpr (sizeof(F) <= 4000) {
       cudaKernelVal <<< (unsigned int) (bounds.nIter-1)/VecLen+1 , VecLen, 0, stream >>> ( bounds , f , config );
       check_last_error();
@@ -98,7 +96,7 @@ YAKL_DEVICE_INLINE void callFunctorOuter(F const &f , Bounds<N,simple> const &bn
   }
 
   template<class F , int N , bool simple, int VecLen, bool B4B>
-  void parallel_outer_cuda( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl::yakl_stream_t stream = 0 ) {
+  void parallel_outer_cuda( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl_stream_t stream = 0 ) {
     if constexpr (sizeof(F) <= 4000) {
       cudaKernelOuterVal <<< (unsigned int) bounds.nIter , config.inner_size, 0, stream >>> ( bounds , f , config , InnerHandler() );
       check_last_error();
@@ -153,7 +151,7 @@ YAKL_DEVICE_INLINE void callFunctorOuter(F const &f , Bounds<N,simple> const &bn
   }
 
   template<class F, int N, bool simple, int VecLen, bool B4B>
-  void parallel_for_hip( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl::yakl_stream_t stream = 0 ) {
+  void parallel_for_hip( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl_stream_t stream = 0 ) {
     hipLaunchKernelGGL( hipKernel , dim3((bounds.nIter-1)/VecLen+1) , dim3(VecLen) ,
                         (std::uint32_t) 0 , (hipStream_t) stream , bounds , f , config );
     check_last_error();
@@ -167,7 +165,7 @@ YAKL_DEVICE_INLINE void callFunctorOuter(F const &f , Bounds<N,simple> const &bn
   }
 
   template<class F, int N, bool simple, int VecLen, bool B4B>
-  void parallel_outer_hip( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl::yakl_stream_t stream = 0 ) {
+  void parallel_outer_hip( Bounds<N,simple> const &bounds , F const &f , LaunchConfig<VecLen,B4B> config, yakl_stream_t stream = 0 ) {
     hipLaunchKernelGGL( hipOuterKernel , dim3(bounds.nIter) , dim3(config.inner_size) ,
                         (std::uint32_t) 0 , (hipStream_t) stream , bounds , f , config , InnerHandler() );
     check_last_error();
@@ -666,7 +664,7 @@ YAKL_INLINE void single_inner( F const &f , InnerHandler handler ) {
 }
 
 template <class F, int N, bool simple>
-inline void parallel_for_record( Bounds<N,simple> const &bounds , F const &f , int vectorSize, yakl::yakl_stream_t stream,  yakl::yakl_event_t event) {
+inline void parallel_for_record( Bounds<N,simple> const &bounds , F const &f , int vectorSize, yakl_stream_t stream,  yakl::yakl_event_t event) {
   #if defined(YAKL_ARCH_HIP)
     parallel_for_hip ( bounds , f , vectorSize, stream );
     hipEventRecord(event, stream);
@@ -680,7 +678,7 @@ inline void parallel_for_record( Bounds<N,simple> const &bounds , F const &f , i
 }
 
 template <class F, int N, bool simple>
-inline void parallel_for_wait( Bounds<N,simple> const &bounds , F const &f , int vectorSize, yakl::yakl_stream_t stream,  yakl::yakl_event_t event) {
+inline void parallel_for_wait( Bounds<N,simple> const &bounds , F const &f , int vectorSize, yakl_stream_t stream,  yakl::yakl_event_t event) {
   #if defined(YAKL_ARCH_HIP)
     hipStreamWaitEvent(stream, event, 0);
     parallel_for_hip ( bounds , f , vectorSize, stream );
