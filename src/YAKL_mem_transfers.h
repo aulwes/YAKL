@@ -35,15 +35,15 @@ namespace yakl {
   template <class T1, class T2,
             typename std::enable_if< std::is_same< typename std::remove_cv<T1>::type ,
                                                    typename std::remove_cv<T2>::type >::value , int >::type = 0>
-  inline void memcpy_device_to_host(T1 *dst , T2 *src , index_t elems) {
+  inline void memcpy_device_to_host(T1 *dst , T2 *src , index_t elems, yakl::yakl_stream_t stream = 0) {
     #ifdef YAKL_AUTO_PROFILE
       timer_start("YAKL_internal_memcpy_device_to_host");
     #endif
     #ifdef YAKL_ARCH_CUDA
-      cudaMemcpyAsync(dst,src,elems*sizeof(T1),cudaMemcpyDeviceToHost,0);
+      cudaMemcpyAsync(dst,src,elems*sizeof(T1),cudaMemcpyDeviceToHost,stream);
       check_last_error();
     #elif defined(YAKL_ARCH_HIP)
-      hipMemcpyAsync(dst,src,elems*sizeof(T1),hipMemcpyDeviceToHost,0);
+      hipMemcpyAsync(dst,src,elems*sizeof(T1),hipMemcpyDeviceToHost,stream);
       check_last_error();
     #elif defined (YAKL_ARCH_SYCL)
       sycl_default_stream().memcpy(dst, src, elems*sizeof(T1));
@@ -69,15 +69,15 @@ namespace yakl {
   template <class T1, class T2,
             typename std::enable_if< std::is_same< typename std::remove_cv<T1>::type ,
                                                    typename std::remove_cv<T2>::type >::value , int >::type = 0>
-  inline void memcpy_host_to_device(T1 *dst , T2 *src , index_t elems) {
+  inline void memcpy_host_to_device(T1 *dst , T2 *src , index_t elems, yakl::yakl_stream_t stream = 0) {
     #ifdef YAKL_AUTO_PROFILE
       timer_start("YAKL_internal_memcpy_host_to_device");
     #endif
     #ifdef YAKL_ARCH_CUDA
-      cudaMemcpyAsync(dst,src,elems*sizeof(T1),cudaMemcpyHostToDevice,0);
+      cudaMemcpyAsync(dst,src,elems*sizeof(T1),cudaMemcpyHostToDevice,stream);
       check_last_error();
     #elif defined(YAKL_ARCH_HIP)
-      hipMemcpyAsync(dst,src,elems*sizeof(T1),hipMemcpyHostToDevice,0);
+      hipMemcpyAsync(dst,src,elems*sizeof(T1),hipMemcpyHostToDevice,stream);
       check_last_error();
     #elif defined (YAKL_ARCH_SYCL)
       sycl_default_stream().memcpy(dst, src, elems*sizeof(T1));

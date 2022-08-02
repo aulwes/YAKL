@@ -51,13 +51,14 @@ namespace yakl {
       * of elements. No checking of rank, style, or dimensionality is performed. Both arrays must be allocated. 
       * `this` array may be in yakl::memHost or yakl::memDevice space. */
     template <int theirRank, int theirStyle>
-    inline void deep_copy_to(Array<typename std::remove_cv<T>::type,theirRank,memHost,theirStyle> const &lhs) const {
+    inline void deep_copy_to(Array<typename std::remove_cv<T>::type,theirRank,memHost,theirStyle> const &lhs,
+                             yakl::yakl_stream_t stream = 0) const {
       #ifdef YAKL_DEBUG
         if (this->totElems() != lhs.totElems()) { yakl_throw("ERROR: deep_copy_to with different number of elements"); }
         if (this->myData == nullptr || lhs.myData == nullptr) { yakl_throw("ERROR: deep_copy_to with nullptr"); }
       #endif
       if (myMem == memHost) { memcpy_host_to_host  ( lhs.myData , this->myData , this->totElems() ); }
-      else                  { memcpy_device_to_host( lhs.myData , this->myData , this->totElems() ); }
+      else                  { memcpy_device_to_host( lhs.myData , this->myData , this->totElems(), stream ); }
       #ifdef YAKL_AUTO_FENCE
         fence();
       #endif
@@ -71,12 +72,13 @@ namespace yakl {
       * of elements. No checking of rank, style, or dimensionality is performed. Both arrays must be allocated. 
       * `this` array may be in yakl::memHost or yakl::memDevice space. */
     template <int theirRank, int theirStyle>
-    inline void deep_copy_to(Array<typename std::remove_cv<T>::type,theirRank,memDevice,theirStyle> const &lhs) const {
+    inline void deep_copy_to(Array<typename std::remove_cv<T>::type,theirRank,memDevice,theirStyle> const &lhs,
+                             yakl::yakl_stream_t stream = 0) const {
       #ifdef YAKL_DEBUG
         if (this->totElems() != lhs.totElems()) { yakl_throw("ERROR: deep_copy_to with different number of elements"); }
         if (this->myData == nullptr || lhs.myData == nullptr) { yakl_throw("ERROR: deep_copy_to with nullptr"); }
       #endif
-      if (myMem == memHost) { memcpy_host_to_device  ( lhs.myData , this->myData , this->totElems() ); }
+      if (myMem == memHost) { memcpy_host_to_device  ( lhs.myData , this->myData , this->totElems(), stream ); }
       else                  { memcpy_device_to_device( lhs.myData , this->myData , this->totElems() ); }
       #ifdef YAKL_AUTO_FENCE
         fence();
